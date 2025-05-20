@@ -29,6 +29,11 @@ function Quizess() {
           {quizess.map((quiz, index) => (
             <li key={quiz._id || index} className="border p-4 rounded shadow" onClick={()=> navigate(`/student/quizzes/${courseId}/${quiz._id}`)} >
               <p className="text-lg font-semibold">Quiz #{index + 1}</p>
+              <p>{quiz._id}</p>
+              <h1>
+                {quiz.questions.questionText}
+                {console.log(quiz.questions.questionText)}
+              </h1>
               <p>Total Questions: {quiz.questions.length}</p>
               {/* You can add a 'Start Quiz' button here */}
             </li>

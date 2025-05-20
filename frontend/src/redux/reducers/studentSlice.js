@@ -28,7 +28,7 @@ export const getQuiz = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
 
-            const response = await axios.get(`${API_URL}/quizes/${id} `);
+            const response = await axios.get(`${API_URL}/${id} `);
             console.log(response.data)
             return response.data;
         } catch (error) {
@@ -43,6 +43,7 @@ export const submitQuiz = createAsyncThunk(
         try {
 
             const response = await axios.post(`${API_URL}/quizes/submit`, { courseId, answers });
+            console.log(response.data.score)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -68,7 +69,8 @@ export const getNotification = createAsyncThunk(
 const initialState = {
     quizess: [],
     quiz: [],
-    score: 0,
+    score: null,
+    wrongAnswers : null,
     notification: [],
     error: null,
     loading: false,
@@ -132,6 +134,7 @@ const studentSlice = createSlice({
                 state.loading = false;
                 state.error = null;
                 state.score = action.payload.score;
+                state.wrongAnswers = action.payload.wrongAnswers;
             })
     },
 });

@@ -7,9 +7,12 @@ const QuizPage = () => {
   const { id: quizId, courseId } = useParams();
   const dispatch = useDispatch();
 
-  const { quiz, loading, error } = useSelector((state) => state.student);
-
+  const { quiz, loading, error, score, wrongAnswers } = useSelector(
+    (state) => state.student
+  );
   const [answers, setAnswers] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -21,72 +24,114 @@ const QuizPage = () => {
   useEffect(() => {
     if (quiz?.questions) {
       setAnswers(new Array(quiz.questions.length).fill(""));
+      setCurrentQuestionIndex(0);
+      setSubmitted(false);
+      setMessage("");
     }
   }, [quiz]);
 
-  const handleAnswerChange = (index, value) => {
+  const handleAnswerChange = (value) => {
     const updatedAnswers = [...answers];
-    updatedAnswers[index] = value;
+    updatedAnswers[currentQuestionIndex] = value;
     setAnswers(updatedAnswers);
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
   };
 
   const handleSubmit = async () => {
     try {
-      const response = await dispatch(submitQuiz({ courseId, answers }));
-
-      if (response?.payload?.score !== undefined) {
-        setMessage(`Quiz submitted! Score: ${response.payload.score}`);
-      } else {
-        setMessage("Failed to submit quiz");
-      }
-    } catch (err) {
-      setMessage("Error submitting quiz");
+      const result = await dispatch(submitQuiz({ courseId, answers })).unwrap();
+      setSubmitted(true);
+      setMessage(`✅ Quiz submitted! Score: ${result.score}`);
+      // NO setWrongAnswers here because wrongAnswers comes from Redux state
+    } catch (error) {
+      setMessage("🚨 Error submitting quiz");
     }
   };
 
   if (loading) return <div>Loading quiz...</div>;
   if (error) return <div className="text-red-600">Error: {error}</div>;
   if (!quiz) return <div>No quiz found</div>;
+  if (!quiz?.questions?.length || !quiz.questions[currentQuestionIndex])
+    return <div>Loading question...</div>;
+
+  const question = quiz.questions[currentQuestionIndex];
+  const selectedAnswer = answers[currentQuestionIndex];
+
+  const isWrong =
+    submitted &&
+    wrongAnswers?.some(
+      (item) =>
+        item.index === currentQuestionIndex &&
+        item.submittedAnswer !== question.correctAnswer
+    );
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4">
       <h2 className="text-xl font-bold mb-4">Quiz for Course: {courseId}</h2>
 
-      <form>
-        {quiz.questions.map((question, index) => (
-          <div key={index} className="mb-6">
-            <h3 className="font-medium mb-2">{question.questionText}</h3>
-            {question.options.map((option, i) => (
-              <div key={i} className="ml-4">
-                <input
-                  type="radio"
-                  id={`q${index}-opt${i}`}
-                  name={`question-${index}`}
-                  value={option}
-                  checked={answers[index] === option}
-                  onChange={(e) => handleAnswerChange(index, e.target.value)}
-                />
-                <label htmlFor={`q${index}-opt${i}`} className="ml-2">
-                  {option}
-                </label>
-              </div>
-            ))}
-          </div>
-        ))}
-      </form>
+      <div className="mb-6">
+        <p className={`font-semibold ${isWrong ? "text-red-600" : ""}`}>
+          {currentQuestionIndex + 1}. {question.questionText}
+        </p>
+        <div className="mt-2 space-y-1">
+          {question.options.map((option, optIndex) => (
+            <label key={optIndex} className="block">
+              <input
+                type="radio"
+                name={`question-${currentQuestionIndex}`}
+                value={option}
+                checked={selectedAnswer === option}
+                disabled={submitted}
+                onChange={() => handleAnswerChange(option)}
+                className="mr-2"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+        {submitted && isWrong && (
+          <p className="text-sm text-red-500 mt-2">
+            ❌ Wrong! Correct: {question.correctAnswer}
+          </p>
+        )}
+      </div>
 
-      <button
-        onClick={handleSubmit}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Submit Quiz
-      </button>
+      {!submitted && currentQuestionIndex < quiz.questions.length - 1 && (
+        <button
+          onClick={handleNext}
+          disabled={!selectedAnswer}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2"
+        >
+          Next
+        </button>
+      )}
 
-      {message && <p className="mt-4 text-green-600">{message}</p>}
+      {!submitted && currentQuestionIndex === quiz.questions.length - 1 && (
+        <button
+          onClick={handleSubmit}
+          disabled={!selectedAnswer}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Submit Quiz
+        </button>
+      )}
+
+      {submitted && (
+        <p className="mt-4 font-bold text-green-600">{message}</p>
+      )}
     </div>
   );
 };
 
 export default QuizPage;
+
+
+
+
 
 

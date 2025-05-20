@@ -3,7 +3,7 @@ const isAuthenticated = require("../middleware/isAuthenticated");
 const { enrolledCourse, getEnrolledCourse } = require("../controllers/enrolledcontrolled");
 const { updateCoursesProgress, certification } = require("../controllers/studentcontroller");
 const { getuserNotification, putNotification } = require("../controllers/notificationController");
-const { getQuizs, getQuiz, submitquiz } = require("../controllers/quizemodel");
+const { getQuizs, getQuiz, submitQuiz } = require("../controllers/quizemodel");
 
 
 
@@ -13,8 +13,8 @@ router.post("/enroll", isAuthenticated, enrolledCourse)
 router.post("/quizes", isAuthenticated, enrolledCourse)
 router.get("/enrolled", isAuthenticated, getEnrolledCourse)
 router.get("/quizes/:courseId", getQuizs)
-router.get("/quizes/:id", getQuiz)
-router.post("/quizes/submit",submitquiz)
+router.get("/:id", getQuiz)
+router.post("/quizes/submit",submitQuiz)
 router.put("/progress", isAuthenticated, updateCoursesProgress)
 router.post("/certificate", isAuthenticated, certification)
 router.get("/notifications", isAuthenticated, getuserNotification)
