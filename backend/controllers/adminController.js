@@ -33,11 +33,11 @@ const addcourses = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ message: 'No video file uploaded.' });
         }
-        console.log(req.file)
-        // Extract details and video URL from Cloudinary response
+
+        console.log("Cloudinary file info:", req.file);
+
         const { title, description, instructor, duration, price, category } = req.body;
-        const videoUrl = req.file.path;  // Cloudinary URL from multer-storage-cloudinary
-        console.log('Uploaded video URL:', videoUrl);
+        const videoUrl = req.file.path; // ✅ Cloudinary URL
 
         const newCourse = {
             title,
@@ -49,21 +49,20 @@ const addcourses = async (req, res) => {
             videoUrl,
         };
 
-        // Save the new course to the database
-        const course = await Courses.create(newCourse);
-        await course.save();
+        const course = await Courses.create(newCourse); // ✅ Already saves, no need for course.save()
 
-        // Send the response
-        res.status(200).json(course);
+        res.status(201).json(course); // Better practice: 201 Created
     } catch (error) {
         console.error('Error adding course:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
+
 const getcourses = async (req, res) => {
     try {
         const courses = await Courses.find();
+        
 
         res.status(200).json({ message: "Courses retrieved successfully", data: courses });  // Detailed success response
     } catch (error) {
@@ -75,7 +74,7 @@ const getcourses = async (req, res) => {
 const getcourseById = async (req, res) => {
     try {
         const { courseId } = req.params;
-        console.log("id is ", courseId)
+      
 
         // Validate that the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
@@ -120,12 +119,14 @@ const updatecourses = async (req, res) => {
 const deletecourses = async (req, res) => {
     try {
         const { id } = req.params;  // Get id directly from params
+        console.log(id)
         const course = await Courses.findByIdAndDelete(id);
         if (!course) {
             return res.status(404).json({
                 message: "Course not found"  // Adjust the message to reflect correct info
             });
         }
+        console.log("delete successfully")
         res.status(200).json({ message: "Course deleted successfully" });
 
     } catch (error) {

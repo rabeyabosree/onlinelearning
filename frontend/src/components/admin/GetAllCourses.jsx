@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteCourses, getAllCourses } from '../../redux/reducers/adminSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,23 +6,35 @@ import { useDispatch, useSelector } from 'react-redux';
 function GetAllCourses() {
   const { courses, loading, error } = useSelector((state) => state.admin);
   const [deleteConfirmationState, setDeleteConfirmationState] = useState({});
-  const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-   const user = JSON.parse(localStorage.getItem("user"))
-  console.log(user)
+  // Safe user parse
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem('user'));
+  } catch (err) {
+    user = null;
+  }
 
+  // Fetch courses only once
   useEffect(() => {
-    if (!courses || courses.length === 0) {
-      dispatch(getAllCourses());
-    }
-  }, [courses, dispatch]);
+    dispatch(getAllCourses());
+  }, [dispatch]);
 
-  // Close dropdown when clicked outside
+  // Close any open dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      const dropdowns = document.querySelectorAll('.dropdown-menu');
+      let clickedInsideAny = false;
+
+      dropdowns.forEach((dropdown) => {
+        if (dropdown.contains(e.target)) {
+          clickedInsideAny = true;
+        }
+      });
+
+      if (!clickedInsideAny) {
         setDeleteConfirmationState({});
       }
     };
@@ -36,7 +48,7 @@ function GetAllCourses() {
 
   const handleDeleteCourse = async (id) => {
     try {
-      await dispatch(deleteCourses(id));
+      await dispatch(deleteCourses({ id }));
       setDeleteConfirmationState((prev) => ({
         ...prev,
         [id]: false,
@@ -79,7 +91,7 @@ function GetAllCourses() {
               className="border p-4 rounded-lg shadow-md flex justify-between items-center relative hover:shadow-lg transition-shadow cursor-pointer"
               onClick={() => navigate(`/courses/${course._id}`)}
             >
-              {/* Course Image and Info */}
+              {/* Course Thumbnail & Info */}
               <div className="flex items-center space-x-4">
                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
                   <img
@@ -94,10 +106,11 @@ function GetAllCourses() {
                 </div>
               </div>
 
-              {/* Dropdown Menu - Only for Admin */}
+              {/* Admin Options Dropdown */}
               {user?.role === 'admin' && (
                 <div className="absolute top-4 right-4 z-20">
                   <button
+                    aria-label="Course Options Menu"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleDeleteConfirmation(course._id);
@@ -109,33 +122,23 @@ function GetAllCourses() {
 
                   {deleteConfirmationState[course._id] && (
                     <div
-                      ref={dropdownRef}
-                      className="absolute top-8 right-0 bg-white shadow-md rounded-md w-32 z-30 transition-all duration-200"
+                      className="dropdown-menu absolute top-8 right-0 bg-white shadow-md rounded-md w-32 z-30 transition-all duration-200"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditCourse(course._id);
-                        }}
+                        onClick={() => handleEditCourse(course._id)}
                         className="block w-full text-left px-4 py-2 text-blue-600 hover:bg-gray-100"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteCourse(course._id);
-                        }}
+                        onClick={() => handleDeleteCourse(course._id)}
                         className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                       >
                         Delete
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCreateQuiz(course._id);
-                        }}
+                        onClick={() => handleCreateQuiz(course._id)}
                         className="block w-full text-left px-4 py-2 text-green-600 hover:bg-gray-100"
                       >
                         Create Quiz
@@ -153,6 +156,7 @@ function GetAllCourses() {
 }
 
 export default GetAllCourses;
+
 
 
 
