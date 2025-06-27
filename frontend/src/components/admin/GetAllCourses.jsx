@@ -94,8 +94,8 @@ function GetAllCourses() {
               {/* Course Thumbnail & Info */}
               <div className="flex items-center space-x-4">
                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-                  <img
-                    src={course.thumbnailUrl || '/default-course-image.jpg'}
+                  <video
+                    src={course.videoUrl || '/default-course-image.jpg'}
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />

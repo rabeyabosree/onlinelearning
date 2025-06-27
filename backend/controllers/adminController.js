@@ -58,7 +58,6 @@ const addcourses = async (req, res) => {
     }
 };
 
-
 const getcourses = async (req, res) => {
     try {
         const courses = await Courses.find();

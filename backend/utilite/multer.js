@@ -1,29 +1,23 @@
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("./cloudinary");
+const cloudinary = require("../utilite/cloudinary");
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (req, file) => {
+        const format = file.mimetype.split("/")[1]; // e.g., 'mp4'
         return {
-            folder: "Education",
-            format: file.mimetype.split("/")[1], // video/mp4 => 'mp4'
+            folder: "E-Learning",
+            format: format,
             public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
-            resource_type: "video", // ✅ Required for Cloudinary to treat it as a video
+            resource_type: "auto", // <-- ✅ safer than 'video'
         };
-    },
+    }
+
 });
 
 const upload = multer({
-    storage,
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith("video/")) {
-            cb(null, true);
-        } else {
-            cb(new Error("Only video files are allowed!"));
-        }
-    },
-    limits: { fileSize: 500 * 1024 * 1024 }, // optional: 500MB limit
+    storage
 });
 
 module.exports = upload;

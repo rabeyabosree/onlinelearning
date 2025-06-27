@@ -154,53 +154,53 @@ const adminSlice = createSlice({
       })
       .addCase(addCourses.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload?.message || 'Something went wrong';
       })
       .addCase(addCourses.fulfilled, (state, action) => {
         state.loading = false;
         state.courses = [...state.courses, action.payload];
         state.error = null;
       })
-      .addCase(getCourseById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getCourseById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(getCourseById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.selectedCourse = action.payload;
-        state.error = null;
-      })
-      .addCase(createQuiz.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createQuiz.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(createQuiz.fulfilled, (state, action) => {
-        state.loading = false;
-        state.quizes = [...state.quizes, action.payload];
-        state.error = null;
-      })
-      .addCase(deleteCourses.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(deleteCourses.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(deleteCourses.fulfilled, (state, action) => {
-        state.loading = false;
-        state.courses = state.courses.filter((course) => course._id !== action.payload._id); // Updated comparison
-        state.error = null;
-      });
-  },
+    .addCase(getCourseById.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(getCourseById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(getCourseById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.selectedCourse = action.payload;
+      state.error = null;
+    })
+    .addCase(createQuiz.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(createQuiz.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(createQuiz.fulfilled, (state, action) => {
+      state.loading = false;
+      state.quizes = [...state.quizes, action.payload];
+      state.error = null;
+    })
+    .addCase(deleteCourses.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(deleteCourses.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(deleteCourses.fulfilled, (state, action) => {
+      state.loading = false;
+      state.courses = state.courses.filter((course) => course._id !== action.payload._id); // Updated comparison
+      state.error = null;
+    });
+},
 });
 
 export default adminSlice.reducer;

@@ -62,14 +62,13 @@ console.log(course)
         </div>
 
         <div className="flex justify-center">
-          <a
-            href={course.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <video
+            src = {course.videoUrl}
+            controls
             className="bg-green-900 text-white px-8 py-3 rounded-md mt-4 hover:bg-green-700 transition-colors ease-in-out duration-300"
           >
             Watch Video
-          </a>
+          </video>
         </div>
 
         {/* ✅ Show quiz button if quizzes exist */}
