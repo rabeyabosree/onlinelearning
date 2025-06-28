@@ -79,10 +79,11 @@ function App() {
             <Route path="enroll" element={<EnrolledCourses />} />
             <Route path="courses/:id" element={<CourseDetail />} />
             <Route path="courses/:courseId/quizzes" element={<Quizess />} />
-             <Route path="quizzes/:courseId/:id" element={<QuizPage />} />
+            <Route path="quizzes/:courseId/:id" element={<QuizPage />} />
             <Route path="certification" element={<Certification />} />
             <Route path="settings" element={<Setting />} />
             <Route path="profile" element={<UserProfile />} />
+            <Route path="edit-course/:id" element={<EditCourse />} />
           </Route>
 
 

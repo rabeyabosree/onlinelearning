@@ -2,13 +2,13 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const isAuthenticated = (req, res, next) => {
-    // Fix the typo: "splite" -> "split"
+    
     const token = req.headers.authorization && req.headers.authorization.split(" ")[1]; 
 
     if (!token) {
         return res.status(403).json({ message: "No token provided" });
     }
-    console.log(token)
+    
 
     try {
         // Verify the token

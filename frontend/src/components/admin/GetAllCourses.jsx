@@ -43,7 +43,7 @@ function GetAllCourses() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleEditCourse = (id) => navigate(`/edit-course/${id}`);
+  const handleEditCourse = (id) => navigate(`/admin/courses/edit-course/${id}`);
   const handleCreateQuiz = (id) => navigate(`/admin/courses/create-quiz/${id}`);
 
   const handleDeleteCourse = async (id) => {
