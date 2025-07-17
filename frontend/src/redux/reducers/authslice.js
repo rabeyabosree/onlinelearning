@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Define API URL
-const API_URL = 'http://localhost:4900/api';
+const API_URL = "https://onlinelearning-5uxm.onrender.com/api"; // 'http://localhost:4900/api';
 
 // Login action (asyncThunk)
 export const loginUser = createAsyncThunk(

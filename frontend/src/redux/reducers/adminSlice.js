@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:4900/api";
+const API_URL = "https://onlinelearning-5uxm.onrender.com/api";// "http://localhost:4900/api"
 
 export const getAllUsers = createAsyncThunk(
   "/admin/get-users",
